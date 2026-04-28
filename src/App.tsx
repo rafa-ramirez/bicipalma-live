@@ -66,7 +66,7 @@ function App() {
       <header className="header">
         <div className="logo">
           <Bike size={32} />
-          <span>BiciPalma</span>
+          <span>BiciPalma Live</span>
         </div>
 
         <div className="controls">
