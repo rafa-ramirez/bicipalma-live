@@ -41,9 +41,9 @@ function App() {
         }
       },
       {
-        enableHighAccuracy: false, // More lenient by default
+        enableHighAccuracy: true,
         timeout: 15000,
-        maximumAge: 60000
+        maximumAge: 0
       }
     );
 
@@ -153,7 +153,7 @@ function App() {
                     setUserLocation([39.5767, 2.6557]);
                     setHasForcedLocation(true);
                   },
-                  { enableHighAccuracy: false, timeout: 10000 }
+                  { enableHighAccuracy: true, timeout: 10000 }
                 );
               }
             }}
