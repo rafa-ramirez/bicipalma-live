@@ -1,5 +1,5 @@
 import { MergedStation, Language } from '../types';
-import { Navigation, Clock, X, ChevronLeft } from 'lucide-react';
+import { Navigation, Clock, X, ChevronLeft, ChevronUp } from 'lucide-react';
 import { formatDistance } from '../utils/geo';
 
 interface SidebarProps {
@@ -36,6 +36,7 @@ export const Sidebar = ({
 
   return (
     <div className={`sidebar glass ${isOpen ? 'open' : 'closed'}`}>
+      <div className="drawer-handle" />
       <div 
         className="sidebar-header"
         style={{ 
@@ -44,32 +45,26 @@ export const Sidebar = ({
           justifyContent: 'space-between',
           color: 'var(--primary)',
           cursor: 'pointer',
-          padding: isOpen ? '8px' : '0',
+          padding: isOpen ? '8px' : '0 4px',
           borderRadius: '12px',
           transition: 'all 0.2s',
           marginBottom: isOpen ? '16px' : '0',
-          marginTop: isOpen ? '0' : '4px'
+          marginTop: isOpen ? '0' : '0'
         }}
         onClick={(e) => {
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Navigation size={18} className={!isOpen ? 'pulse' : ''} />
-          <h2 style={{ fontSize: '1rem', fontWeight: 700 }}>{t.nearest}</h2>
+          <h2 style={{ fontSize: '1rem', fontWeight: 700, letterSpacing: '-0.01em' }}>{t.nearest}</h2>
         </div>
         <div className="toggle-icon">
           {isOpen ? (
-            <X size={18} />
+            <X size={20} />
           ) : (
-            <ChevronLeft 
-              size={18} 
-              style={{ 
-                transform: window.innerWidth < 768 ? 'rotate(90deg)' : 'rotate(180deg)',
-                transition: 'transform 0.3s'
-              }} 
-            />
+            <ChevronUp size={20} />
           )}
         </div>
       </div>
@@ -109,55 +104,38 @@ export const Sidebar = ({
                   e.stopPropagation();
                   onStationSelect(station);
                 }}
-                style={{ 
-                  borderColor: selectedId === station.station_id ? 'var(--primary)' : 'rgba(255, 255, 255, 0.1)',
-                  background: selectedId === station.station_id ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.05)',
-                  boxShadow: selectedId === station.station_id ? '0 4px 20px rgba(0, 0, 0, 0.3)' : 'none',
-                  transform: selectedId === station.station_id ? 'scale(1.02)' : 'none'
-                }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-                  <div style={{ 
-                    fontWeight: 800, 
-                    fontSize: '0.9rem', 
-                    color: selectedId === station.station_id ? '#0f172a' : 'white',
-                    overflow: 'hidden', 
-                    textOverflow: 'ellipsis', 
-                    whiteSpace: 'nowrap' 
-                  }}>
+                  <div className="station-name">
                     {station.name}
                   </div>
                   {station.distance !== undefined && (
-                    <span className="distance-tag" style={{ 
-                      flexShrink: 0,
-                      background: selectedId === station.station_id ? '#0f172a' : 'rgba(56, 189, 248, 0.2)',
-                      color: selectedId === station.station_id ? 'white' : 'var(--accent)'
-                    }}>
+                    <span className="distance-tag">
                       {formatDistance(station.distance)}
                     </span>
                   )}
                 </div>
                 
                 <div className="availability-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
-                  <div className="avail-item" style={{ background: selectedId === station.station_id ? 'rgba(0,0,0,0.05)' : 'rgba(15, 23, 42, 0.3)' }}>
-                    <span className="avail-label" style={{ color: selectedId === station.station_id ? '#64748b' : 'var(--text-muted)' }}>{t.manual}</span>
+                  <div className="avail-item">
+                    <span className="avail-label">{t.manual}</span>
                     <span className="avail-value" style={{ 
                       color: station.num_manual_available > 0 ? '#10b981' : '#cbd5e1' 
                     }}>
                       {station.num_manual_available}
                     </span>
                   </div>
-                  <div className="avail-item" style={{ background: selectedId === station.station_id ? 'rgba(0,0,0,0.05)' : 'rgba(15, 23, 42, 0.3)' }}>
-                    <span className="avail-label" style={{ color: selectedId === station.station_id ? '#64748b' : 'var(--text-muted)' }}>{t.electric}</span>
+                  <div className="avail-item">
+                    <span className="avail-label">{t.electric}</span>
                     <span className="avail-value" style={{ 
                       color: station.num_electric_available > 0 ? '#38bdf8' : '#cbd5e1' 
                     }}>
                       {station.num_electric_available}
                     </span>
                   </div>
-                  <div className="avail-item" style={{ background: selectedId === station.station_id ? 'rgba(0,0,0,0.05)' : 'rgba(15, 23, 42, 0.3)' }}>
-                    <span className="avail-label" style={{ color: selectedId === station.station_id ? '#64748b' : 'var(--text-muted)' }}>{t.docks}</span>
-                    <span className="avail-value" style={{ color: selectedId === station.station_id ? '#0f172a' : 'white' }}>{station.num_docks_available}</span>
+                  <div className="avail-item">
+                    <span className="avail-label">{t.docks}</span>
+                    <span className="avail-value docks">{station.num_docks_available}</span>
                   </div>
                 </div>
               </div>
