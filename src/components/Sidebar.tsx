@@ -11,9 +11,9 @@ interface SidebarProps {
 }
 
 const translations = {
-  en: { nearest: 'Nearest Stations', bikes: 'Total', manual: 'Manual', electric: 'Electric', docks: 'Docks', updated: 'Updated', waiting: 'Grant location to see nearest stations', empty: 'No stations within 500m' },
-  es: { nearest: 'Estaciones Cercanas', bikes: 'Total', manual: 'Manual', electric: 'Eléctrica', docks: 'Anclajes', updated: 'Actualizado', waiting: 'Permite el acceso a la ubicación', empty: 'No hay estaciones a menos de 500m' },
-  ca: { nearest: 'Estacions Properes', bikes: 'Total', manual: 'Manual', electric: 'Elèctrica', docks: 'Ancoratges', updated: 'Actualitzat', waiting: 'Permet l\'accés a la ubicació', empty: 'No hi ha estacions a menys de 500m' },
+  en: { nearest: 'Nearest Stations', bikes: 'Total', manual: 'M', electric: 'E', docks: 'D', updated: 'Updated', waiting: 'Grant location to see nearest stations', empty: 'No stations within 500m' },
+  es: { nearest: 'Estaciones Cercanas', bikes: 'Total', manual: 'M', electric: 'E', docks: 'A', updated: 'Actualizado', waiting: 'Permite el acceso a la ubicación', empty: 'No hay estaciones a menos de 500m' },
+  ca: { nearest: 'Estacions Properes', bikes: 'Total', manual: 'M', electric: 'E', docks: 'A', updated: 'Actualitzat', waiting: 'Permet l\'accés a la ubicació', empty: 'No hi ha estacions a menys de 500m' },
 };
 
 export const Sidebar = ({ stations, lang, lastUpdated, onStationSelect, waitingForLocation }: SidebarProps) => {

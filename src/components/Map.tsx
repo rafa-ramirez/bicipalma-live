@@ -8,34 +8,42 @@ interface MapProps {
   stations: MergedStation[];
   userLocation: [number, number] | null;
   selectedStation: MergedStation | null;
+  filterType: 'all' | 'manual' | 'electric';
 }
 
-const createBikeIcon = (bikes: number) => {
-  const color = bikes === 0 ? '#ef4444' : bikes < 3 ? '#f59e0b' : '#10b981';
+const createBikeIcon = (manual: number, electric: number, filterType: string, isSelected: boolean) => {
+  const total = manual + electric;
+  const color = total === 0 ? '#ef4444' : total < 3 ? '#f59e0b' : '#10b981';
+  
+  const showManual = isSelected || filterType === 'all' || filterType === 'manual';
+  const showElectric = isSelected || filterType === 'all' || filterType === 'electric';
+  const showBoth = showManual && showElectric;
+
   const html = `
     <div style="
       background: white;
-      border: 3px solid ${color};
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      border: 2px solid ${color};
+      border-radius: 20px;
+      padding: 2px 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: ${color};
-      font-weight: bold;
-      font-size: 12px;
+      gap: 6px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      white-space: nowrap;
+      min-width: 30px;
     ">
-      ${bikes}
+      ${showManual ? `<span style="color: #10b981; font-weight: 800; font-size: 11px;">M ${manual}</span>` : ''}
+      ${showBoth ? `<span style="color: #e2e8f0; width: 1px; height: 12px; background: #e2e8f0;"></span>` : ''}
+      ${showElectric ? `<span style="color: #38bdf8; font-weight: 800; font-size: 11px;">E ${electric}</span>` : ''}
     </div>
   `;
 
   return L.divIcon({
     html,
-    className: 'custom-bike-icon',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
+    className: 'custom-bike-icon-pill',
+    iconSize: [showBoth ? 70 : 40, 24],
+    iconAnchor: [showBoth ? 35 : 20, 12],
   });
 };
 
@@ -66,9 +74,15 @@ const MapController = ({ coords, selectedStation, markerRefs }: {
   return null;
 };
 
-export const MapView = ({ stations, userLocation, selectedStation }: MapProps) => {
+export const MapView = ({ stations, userLocation, selectedStation, filterType }: MapProps) => {
   const center: [number, number] = [39.5696, 2.6502]; // Palma de Mallorca center
   const markerRefs = useRef<Map<string, L.Marker>>(new Map());
+
+  const filteredStations = stations.filter(s => {
+    if (filterType === 'manual') return s.num_manual_available > 0;
+    if (filterType === 'electric') return s.num_electric_available > 0;
+    return true;
+  });
 
   return (
     <MapContainer 
@@ -82,11 +96,16 @@ export const MapView = ({ stations, userLocation, selectedStation }: MapProps) =
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       
-      {stations.map((station) => (
+      {filteredStations.map((station) => (
         <Marker 
           key={station.station_id} 
           position={[station.lat, station.lon]}
-          icon={createBikeIcon(station.num_bikes_available)}
+          icon={createBikeIcon(
+            station.num_manual_available, 
+            station.num_electric_available, 
+            filterType,
+            selectedStation?.station_id === station.station_id
+          )}
           ref={(ref) => {
             if (ref) {
               markerRefs.current.set(station.station_id, ref);
