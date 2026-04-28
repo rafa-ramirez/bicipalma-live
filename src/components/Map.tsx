@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { MergedStation } from '../types';
@@ -40,7 +40,11 @@ const createBikeIcon = (bikes: number) => {
 };
 
 // Component to handle map centering and popup
-const MapController = ({ coords, selectedStation }: { coords: [number, number] | null, selectedStation: MergedStation | null }) => {
+const MapController = ({ coords, selectedStation, markerRefs }: { 
+  coords: [number, number] | null, 
+  selectedStation: MergedStation | null,
+  markerRefs: React.MutableRefObject<Map<string, L.Marker>>
+}) => {
   const map = useMap();
   
   useEffect(() => {
@@ -52,17 +56,19 @@ const MapController = ({ coords, selectedStation }: { coords: [number, number] |
   useEffect(() => {
     if (selectedStation) {
       map.setView([selectedStation.lat, selectedStation.lon], 16);
-      // We'll let the Marker's own ref handle opening the popup or just center it.
-      // Leaflet doesn't easily allow opening popups by ID without refs, 
-      // but centering is a good start.
+      const marker = markerRefs.current.get(selectedStation.station_id);
+      if (marker) {
+        marker.openPopup();
+      }
     }
-  }, [selectedStation, map]);
+  }, [selectedStation, map, markerRefs]);
 
   return null;
 };
 
 export const MapView = ({ stations, userLocation, selectedStation }: MapProps) => {
   const center: [number, number] = [39.5696, 2.6502]; // Palma de Mallorca center
+  const markerRefs = useRef<Map<string, L.Marker>>(new Map());
 
   return (
     <MapContainer 
@@ -81,25 +87,29 @@ export const MapView = ({ stations, userLocation, selectedStation }: MapProps) =
           key={station.station_id} 
           position={[station.lat, station.lon]}
           icon={createBikeIcon(station.num_bikes_available)}
-          eventHandlers={{
-            add: (e) => {
-              if (selectedStation?.station_id === station.station_id) {
-                e.target.openPopup();
-              }
+          ref={(ref) => {
+            if (ref) {
+              markerRefs.current.set(station.station_id, ref);
+            } else {
+              markerRefs.current.delete(station.station_id);
             }
           }}
         >
           <Popup>
-            <div style={{ color: '#0f172a' }}>
-              <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>{station.name}</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <div style={{ textAlign: 'center', padding: '4px', background: '#f1f5f9', borderRadius: '4px' }}>
-                  <div style={{ fontWeight: 'bold' }}>{station.num_bikes_available}</div>
-                  <div style={{ fontSize: '0.7rem' }}>Bikes</div>
+            <div style={{ color: '#0f172a', minWidth: '150px' }}>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: 600 }}>{station.name}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
+                <div style={{ textAlign: 'center', padding: '6px 2px', background: '#f1f5f9', borderRadius: '6px' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '1rem', color: '#10b981' }}>{station.num_manual_available}</div>
+                  <div style={{ fontSize: '0.6rem', color: '#64748b', textTransform: 'uppercase' }}>Manual</div>
                 </div>
-                <div style={{ textAlign: 'center', padding: '4px', background: '#f1f5f9', borderRadius: '4px' }}>
-                  <div style={{ fontWeight: 'bold' }}>{station.num_docks_available}</div>
-                  <div style={{ fontSize: '0.7rem' }}>Docks</div>
+                <div style={{ textAlign: 'center', padding: '6px 2px', background: '#f1f5f9', borderRadius: '6px' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '1rem', color: '#38bdf8' }}>{station.num_electric_available}</div>
+                  <div style={{ fontSize: '0.6rem', color: '#64748b', textTransform: 'uppercase' }}>Electric</div>
+                </div>
+                <div style={{ textAlign: 'center', padding: '6px 2px', background: '#f1f5f9', borderRadius: '6px' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>{station.num_docks_available}</div>
+                  <div style={{ fontSize: '0.6rem', color: '#64748b', textTransform: 'uppercase' }}>Docks</div>
                 </div>
               </div>
             </div>
@@ -119,7 +129,11 @@ export const MapView = ({ stations, userLocation, selectedStation }: MapProps) =
         />
       )}
 
-      <MapController coords={userLocation} selectedStation={selectedStation} />
+      <MapController 
+        coords={userLocation} 
+        selectedStation={selectedStation} 
+        markerRefs={markerRefs} 
+      />
     </MapContainer>
   );
 };

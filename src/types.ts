@@ -10,6 +10,10 @@ export interface StationInfo {
 export interface StationStatus {
   station_id: string;
   num_bikes_available: number;
+  vehicle_types_available?: Array<{
+    vehicle_type_id: string;
+    count: number;
+  }>;
   num_docks_available: number;
   is_installed: boolean;
   is_renting: boolean;
@@ -19,6 +23,8 @@ export interface StationStatus {
 
 export interface MergedStation extends StationInfo {
   num_bikes_available: number;
+  num_manual_available: number;
+  num_electric_available: number;
   num_docks_available: number;
   is_renting: boolean;
   distance?: number;

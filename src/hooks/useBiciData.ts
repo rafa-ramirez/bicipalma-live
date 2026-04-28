@@ -37,9 +37,15 @@ export const useBiciData = (lang: Language) => {
       // 4. Merge data
       const merged: MergedStation[] = infoList.map(info => {
         const status = statusList.find(s => s.station_id === info.station_id);
+        
+        const manual = status?.vehicle_types_available?.find(v => v.vehicle_type_id === '150')?.count ?? 0;
+        const electric = status?.vehicle_types_available?.find(v => v.vehicle_type_id === '143')?.count ?? 0;
+
         return {
           ...info,
           num_bikes_available: status?.num_bikes_available ?? 0,
+          num_manual_available: manual,
+          num_electric_available: electric,
           num_docks_available: status?.num_docks_available ?? 0,
           is_renting: status?.is_renting ?? false,
         };
