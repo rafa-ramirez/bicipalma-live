@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Language, MergedStation, GBFSRoot, StationInfo, StationStatus } from './types';
+import { Language, MergedStation, GBFSRoot, StationInfo, StationStatus, GBFSFeed } from '../types';
 
 const ROOT_URL = 'https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_ea/gbfs.json';
 
@@ -17,8 +17,8 @@ export const useBiciData = (lang: Language) => {
 
       // 2. Find information and status URLs for current language
       const feeds = rootData.data[lang].feeds;
-      const infoUrl = feeds.find(f => f.name === 'station_information')?.url;
-      const statusUrl = feeds.find(f => f.name === 'station_status')?.url;
+      const infoUrl = feeds.find((f: GBFSFeed) => f.name === 'station_information')?.url;
+      const statusUrl = feeds.find((f: GBFSFeed) => f.name === 'station_status')?.url;
 
       if (!infoUrl || !statusUrl) throw new Error('Feeds not found');
 
@@ -38,8 +38,8 @@ export const useBiciData = (lang: Language) => {
       const merged: MergedStation[] = infoList.map(info => {
         const status = statusList.find(s => s.station_id === info.station_id);
         
-        const manual = status?.vehicle_types_available?.find(v => v.vehicle_type_id === '150')?.count ?? 0;
-        const electric = status?.vehicle_types_available?.find(v => v.vehicle_type_id === '143')?.count ?? 0;
+        const manual = status?.vehicle_types_available?.find((v: { vehicle_type_id: string }) => v.vehicle_type_id === '150')?.count ?? 0;
+        const electric = status?.vehicle_types_available?.find((v: { vehicle_type_id: string }) => v.vehicle_type_id === '143')?.count ?? 0;
 
         return {
           ...info,
