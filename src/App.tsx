@@ -26,23 +26,14 @@ function App() {
 
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
-        console.log('Location updated:', position.coords.latitude, position.coords.longitude);
         setUserLocation([position.coords.latitude, position.coords.longitude]);
       },
       (err) => {
         console.error('Geolocation error:', err);
-        // If high accuracy failed, try again without it
-        if (err.code === err.TIMEOUT) {
-          navigator.geolocation.getCurrentPosition(
-            (p) => setUserLocation([p.coords.latitude, p.coords.longitude]),
-            (e) => console.error('Fallback geolocation failed:', e),
-            { enableHighAccuracy: false, timeout: 10000 }
-          );
-        }
       },
       {
         enableHighAccuracy: true,
-        timeout: 15000,
+        timeout: 5000,
         maximumAge: 0
       }
     );
@@ -50,7 +41,7 @@ function App() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
-  // Default to Palma center if no location after 3s (for testing/initial view)
+  /*
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!userLocation && !hasForcedLocation) {
@@ -61,6 +52,7 @@ function App() {
     }, 3000);
     return () => clearTimeout(timer);
   }, [userLocation, hasForcedLocation]);
+  */
 
   useEffect(() => {
     const handleSimulate = () => {
@@ -148,6 +140,9 @@ function App() {
                   (e) => {
                     console.error('Manual refresh error:', e);
                     setIsLocating(false);
+                    if (e.code === e.POSITION_UNAVAILABLE) {
+                      alert("Location signal lost. Please ensure Wi-Fi is on or move to a clearer area.");
+                    }
                     // Automatically fallback without confirm for smoother experience
                     console.log('Falling back to simulated location');
                     setUserLocation([39.5767, 2.6557]);
