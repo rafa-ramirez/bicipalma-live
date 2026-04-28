@@ -1,5 +1,5 @@
 import { MergedStation, Language } from '../types';
-import { Navigation, Bike, MapPin, Clock } from 'lucide-react';
+import { Navigation, Bike, MapPin, Clock, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDistance } from '../utils/geo';
 
 interface SidebarProps {
@@ -9,6 +9,8 @@ interface SidebarProps {
   onStationSelect: (station: MergedStation | null) => void;
   waitingForLocation: boolean;
   selectedId: string | null;
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
 }
 
 const translations = {
@@ -17,15 +19,33 @@ const translations = {
   ca: { nearest: 'Estacions Properes', bikes: 'Total', manual: 'M', electric: 'E', docks: 'A', updated: 'Actualitzat', waiting: 'Permet l\'accés a la ubicació', empty: 'No hi ha estacions a menys de 500m' },
 };
 
-export const Sidebar = ({ stations, lang, lastUpdated, onStationSelect, waitingForLocation, selectedId }: SidebarProps) => {
+export const Sidebar = ({ stations, lang, lastUpdated, onStationSelect, waitingForLocation, selectedId, isOpen, setIsOpen }: SidebarProps) => {
   const t = translations[lang];
 
   return (
-    <div className="sidebar glass">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)' }}>
-        <Navigation size={18} />
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{t.nearest}</h2>
+    <div className={`sidebar glass ${isOpen ? 'open' : 'closed'}`}>
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justify-content: 'space-between',
+          color: 'var(--primary)',
+          cursor: 'pointer',
+          paddingBottom: isOpen ? '12px' : '0'
+        }}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Navigation size={18} />
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{t.nearest}</h2>
+        </div>
+        <div className="mobile-only">
+          {isOpen ? <X size={20} /> : <ChevronLeft size={20} />}
+        </div>
       </div>
+
+      {isOpen && (
+        <>
 
       {lastUpdated && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
@@ -102,7 +122,8 @@ export const Sidebar = ({ stations, lang, lastUpdated, onStationSelect, waitingF
           </div>
         ))
       )}
-
-    </div>
+    </>
+  )}
+</div>
   );
 };

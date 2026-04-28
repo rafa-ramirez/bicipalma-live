@@ -16,6 +16,7 @@ function App() {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [selectedStation, setSelectedStation] = useState<MergedStation | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'manual' | 'electric'>('all');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { stations, lastUpdated, loading, error } = useBiciData(lang);
 
   useEffect(() => {
@@ -59,6 +60,9 @@ function App() {
 
   const handleStationSelect = (station: MergedStation | null) => {
     setSelectedStation(station);
+    if (station && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   };
 
   return (
@@ -132,6 +136,8 @@ function App() {
           onStationSelect={handleStationSelect}
           waitingForLocation={!userLocation}
           selectedId={selectedStation?.station_id || null}
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
         />
         
         <div style={{ flex: 1, position: 'relative' }}>
