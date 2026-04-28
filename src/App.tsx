@@ -54,8 +54,8 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!userLocation && !hasForcedLocation) {
-        console.log('Using fallback location: Palma Center');
-        setUserLocation([39.5696, 2.6502]);
+        console.log('Using fallback location: Plaça Espanya');
+        setUserLocation([39.5767, 2.6557]);
         setHasForcedLocation(true);
       }
     }, 3000);
@@ -65,7 +65,7 @@ function App() {
   useEffect(() => {
     const handleSimulate = () => {
       console.log('Simulation triggered via event');
-      setUserLocation([39.5696, 2.6502]);
+      setUserLocation([39.5767, 2.6557]);
       setHasForcedLocation(true);
     };
     window.addEventListener('simulate-location', handleSimulate);
@@ -150,7 +150,7 @@ function App() {
                     setIsLocating(false);
                     // Automatically fallback without confirm for smoother experience
                     console.log('Falling back to simulated location');
-                    setUserLocation([39.5696, 2.6502]);
+                    setUserLocation([39.5767, 2.6557]);
                     setHasForcedLocation(true);
                   },
                   { enableHighAccuracy: false, timeout: 10000 }
