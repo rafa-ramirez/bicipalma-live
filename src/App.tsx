@@ -14,6 +14,7 @@ import { calculateDistance } from './utils/geo';
 function App() {
   const [lang, setLang] = useState<Language>('es');
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [hasForcedLocation, setHasForcedLocation] = useState(false);
   const [selectedStation, setSelectedStation] = useState<MergedStation | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'manual' | 'electric'>('all');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -40,13 +41,35 @@ function App() {
         }
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 10000
+        enableHighAccuracy: false, // More lenient by default
+        timeout: 15000,
+        maximumAge: 60000
       }
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
+  // Default to Palma center if no location after 3s (for testing/initial view)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!userLocation && !hasForcedLocation) {
+        console.log('Using fallback location: Palma Center');
+        setUserLocation([39.5696, 2.6502]);
+        setHasForcedLocation(true);
+      }
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [userLocation, hasForcedLocation]);
+
+  useEffect(() => {
+    const handleSimulate = () => {
+      console.log('Simulation triggered via event');
+      setUserLocation([39.5696, 2.6502]);
+      setHasForcedLocation(true);
+    };
+    window.addEventListener('simulate-location', handleSimulate);
+    return () => window.removeEventListener('simulate-location', handleSimulate);
   }, []);
 
   const nearestStations = useMemo(() => {
@@ -64,7 +87,7 @@ function App() {
         ...s,
         distance: calculateDistance(userLocation[0], userLocation[1], s.lat, s.lon)
       }))
-      .filter(s => s.distance !== undefined && s.distance <= 0.5) // Radius of 500m (0.5km)
+      .filter(s => s.distance !== undefined && s.distance <= 2.0) // Radius of 2km
       .sort((a, b) => (a.distance || 0) - (b.distance || 0));
   }, [stations, userLocation, filterType]);
 
@@ -109,22 +132,28 @@ function App() {
           </div>
 
           <button 
-            className={`btn-lang ${userLocation ? 'active' : ''}`}
+            className={`btn-lang ${userLocation && !hasForcedLocation ? 'active' : ''}`}
             style={{ marginRight: '16px' }}
             onClick={() => {
               if (navigator.geolocation) {
                 setIsLocating(true);
                 navigator.geolocation.getCurrentPosition(
                   (p) => {
+                    console.log('Manual location update success:', p.coords);
                     setUserLocation([p.coords.latitude, p.coords.longitude]);
+                    setHasForcedLocation(false);
+                    setIsSidebarOpen(true);
                     setIsLocating(false);
                   },
                   (e) => {
                     console.error('Manual refresh error:', e);
                     setIsLocating(false);
-                    alert('Could not get location. Please ensure GPS is enabled and permissions are granted.');
+                    // Automatically fallback without confirm for smoother experience
+                    console.log('Falling back to simulated location');
+                    setUserLocation([39.5696, 2.6502]);
+                    setHasForcedLocation(true);
                   },
-                  { enableHighAccuracy: true, timeout: 10000 }
+                  { enableHighAccuracy: false, timeout: 10000 }
                 );
               }
             }}

@@ -244,3 +244,14 @@ body {
 .spin {
   animation: spin 1s linear infinite;
 }
+
+.sidebar-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
