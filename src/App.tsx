@@ -19,6 +19,7 @@ function App() {
   const [filterType, setFilterType] = useState<'all' | 'manual' | 'electric'>('all');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLocating, setIsLocating] = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false);
   const { stations, lastUpdated, loading, error } = useBiciData(lang);
 
   useEffect(() => {
@@ -99,74 +100,82 @@ function App() {
         </div>
 
         <div className="controls">
-          <div style={{ display: 'flex', gap: '4px', marginRight: '16px', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '10px' }}>
+          <div className="filter-group">
             <button 
               className={`btn-lang ${filterType === 'all' ? 'active' : ''}`} 
               onClick={() => setFilterType('all')}
-              style={{ fontSize: '0.75rem' }}
             >
               {translations[lang].all}
             </button>
             <button 
               className={`btn-lang ${filterType === 'manual' ? 'active' : ''}`} 
               onClick={() => setFilterType('manual')}
-              style={{ fontSize: '0.75rem' }}
             >
               {translations[lang].manual}
             </button>
             <button 
               className={`btn-lang ${filterType === 'electric' ? 'active' : ''}`} 
               onClick={() => setFilterType('electric')}
-              style={{ fontSize: '0.75rem' }}
             >
               {translations[lang].electric}
             </button>
           </div>
 
-          <button 
-            className={`btn-lang ${userLocation && !hasForcedLocation ? 'active' : ''}`}
-            style={{ marginRight: '16px' }}
-            onClick={() => {
-              if (navigator.geolocation) {
-                setIsLocating(true);
-                navigator.geolocation.getCurrentPosition(
-                  (p) => {
-                    console.log('Manual location update success:', p.coords);
-                    setUserLocation([p.coords.latitude, p.coords.longitude]);
-                    setHasForcedLocation(false);
-                    setIsSidebarOpen(true);
-                    setIsLocating(false);
-                  },
-                  (e) => {
-                    console.error('Manual refresh error:', e);
-                    setIsLocating(false);
-                    if (e.code === e.POSITION_UNAVAILABLE) {
-                      alert("Location signal lost. Please ensure Wi-Fi is on or move to a clearer area.");
-                    }
-                    // Automatically fallback without confirm for smoother experience
-                    console.log('Falling back to simulated location');
-                    setUserLocation([39.5767, 2.6557]);
-                    setHasForcedLocation(true);
-                  },
-                  { enableHighAccuracy: true, timeout: 10000 }
-                );
-              }
-            }}
-            title="Refresh Location"
-          >
-            <Navigation size={14} className={isLocating ? 'spin' : ''} />
-          </button>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button 
+              className={`btn-lang ${userLocation && !hasForcedLocation ? 'active' : ''}`}
+              onClick={() => {
+                if (navigator.geolocation) {
+                  setIsLocating(true);
+                  navigator.geolocation.getCurrentPosition(
+                    (p) => {
+                      setUserLocation([p.coords.latitude, p.coords.longitude]);
+                      setHasForcedLocation(false);
+                      setIsSidebarOpen(true);
+                      setIsLocating(false);
+                    },
+                    (e) => {
+                      setIsLocating(false);
+                      console.log('Falling back to simulated location');
+                      setUserLocation([39.5767, 2.6557]);
+                      setHasForcedLocation(true);
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                  );
+                }
+              }}
+              title="Refresh Location"
+            >
+              <Navigation size={14} className={isLocating ? 'spin' : ''} />
+            </button>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
-            {(['es', 'ca', 'en'] as Language[]).map(l => (
+            <div className="lang-dropdown">
               <button 
-                key={l}
-                className={`btn-lang ${lang === l ? 'active' : ''}`}
-                onClick={() => setLang(l)}
+                className="btn-lang active"
+                onClick={() => setIsLangOpen(!isLangOpen)}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                {l.toUpperCase()}
+                <Globe size={14} />
+                {lang.toUpperCase()}
               </button>
-            ))}
+              
+              {isLangOpen && (
+                <div className="lang-menu">
+                  {(['es', 'ca', 'en'] as Language[]).map(l => (
+                    <button 
+                      key={l}
+                      className={`btn-lang ${lang === l ? 'active' : ''}`}
+                      onClick={() => {
+                        setLang(l);
+                        setIsLangOpen(false);
+                      }}
+                    >
+                      {l.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>

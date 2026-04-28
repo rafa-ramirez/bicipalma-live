@@ -44,24 +44,33 @@ export const Sidebar = ({
           justifyContent: 'space-between',
           color: 'var(--primary)',
           cursor: 'pointer',
-          padding: '4px 8px',
-          margin: '-4px -8px',
-          borderRadius: '8px',
-          transition: 'background 0.2s',
-          marginBottom: isOpen ? '12px' : '0'
+          padding: isOpen ? '8px' : '0',
+          borderRadius: '12px',
+          transition: 'all 0.2s',
+          marginBottom: isOpen ? '16px' : '0',
+          marginTop: isOpen ? '0' : '4px'
         }}
         onClick={(e) => {
           e.stopPropagation();
-          console.log('Sidebar header clicked. Current isOpen:', isOpen);
           setIsOpen(!isOpen);
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Navigation size={18} />
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{t.nearest}</h2>
+          <Navigation size={18} className={!isOpen ? 'pulse' : ''} />
+          <h2 style={{ fontSize: '1rem', fontWeight: 700 }}>{t.nearest}</h2>
         </div>
         <div className="toggle-icon">
-          {isOpen ? <X size={20} /> : <ChevronLeft size={20} style={{ transform: window.innerWidth < 768 ? 'rotate(-90deg)' : 'none' }} />}
+          {isOpen ? (
+            <X size={18} />
+          ) : (
+            <ChevronLeft 
+              size={18} 
+              style={{ 
+                transform: window.innerWidth < 768 ? 'rotate(90deg)' : 'rotate(180deg)',
+                transition: 'transform 0.3s'
+              }} 
+            />
+          )}
         </div>
       </div>
 
@@ -101,10 +110,10 @@ export const Sidebar = ({
                   onStationSelect(station);
                 }}
                 style={{ 
-                  borderColor: selectedId === station.station_id ? 'white' : 'var(--glass-border)',
-                  background: selectedId === station.station_id ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.5)',
+                  borderColor: selectedId === station.station_id ? 'var(--primary)' : 'rgba(255, 255, 255, 0.1)',
+                  background: selectedId === station.station_id ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.05)',
                   boxShadow: selectedId === station.station_id ? '0 4px 20px rgba(0, 0, 0, 0.3)' : 'none',
-                  transform: selectedId === station.station_id ? 'translateX(-8px)' : 'none'
+                  transform: selectedId === station.station_id ? 'scale(1.02)' : 'none'
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
