@@ -17,6 +17,7 @@ function App() {
   const [selectedStation, setSelectedStation] = useState<MergedStation | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'manual' | 'electric'>('all');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isLocating, setIsLocating] = useState(false);
   const { stations, lastUpdated, loading, error } = useBiciData(lang);
 
   useEffect(() => {
@@ -24,15 +25,24 @@ function App() {
 
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
+        console.log('Location updated:', position.coords.latitude, position.coords.longitude);
         setUserLocation([position.coords.latitude, position.coords.longitude]);
       },
       (err) => {
         console.error('Geolocation error:', err);
+        // If high accuracy failed, try again without it
+        if (err.code === err.TIMEOUT) {
+          navigator.geolocation.getCurrentPosition(
+            (p) => setUserLocation([p.coords.latitude, p.coords.longitude]),
+            (e) => console.error('Fallback geolocation failed:', e),
+            { enableHighAccuracy: false, timeout: 10000 }
+          );
+        }
       },
       {
         enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
+        timeout: 10000,
+        maximumAge: 10000
       }
     );
 
@@ -103,15 +113,24 @@ function App() {
             style={{ marginRight: '16px' }}
             onClick={() => {
               if (navigator.geolocation) {
+                setIsLocating(true);
                 navigator.geolocation.getCurrentPosition(
-                  (p) => setUserLocation([p.coords.latitude, p.coords.longitude]),
-                  (e) => console.error(e)
+                  (p) => {
+                    setUserLocation([p.coords.latitude, p.coords.longitude]);
+                    setIsLocating(false);
+                  },
+                  (e) => {
+                    console.error('Manual refresh error:', e);
+                    setIsLocating(false);
+                    alert('Could not get location. Please ensure GPS is enabled and permissions are granted.');
+                  },
+                  { enableHighAccuracy: true, timeout: 10000 }
                 );
               }
             }}
             title="Refresh Location"
           >
-            <Navigation size={14} />
+            <Navigation size={14} className={isLocating ? 'spin' : ''} />
           </button>
 
           <div style={{ display: 'flex', gap: '8px' }}>
