@@ -1,16 +1,23 @@
 # 🚲 BiciPalma Live
 
-A high-performance, real-time mapping application for **BiciPalma**, the public bike-sharing system in Palma de Mallorca. This application provides users with up-to-the-minute information on bike availability, focusing on speed, accuracy, and a premium user experience.
+A high-performance, real-time mapping application for **BiciPalma**, the public bike-sharing system in Palma de Mallorca. This application provides users with up-to-the-minute information on bike availability, focusing on speed, accuracy, and a premium, state-of-the-art user experience.
 
 ## ✨ Features
 
 - **Real-Time Data**: Automatically refreshes bike and dock availability every minute using official GBFS feeds.
 - **Smart Mapping**: Interactive map powered by Leaflet with custom "pill" markers showing the breakdown of Manual vs. Electric bikes at a glance.
-- **Location Awareness**: Automatically detects user location to show the nearest stations within a 500m radius.
+- **Location Awareness**: Detects user location to show the nearest stations with a fallback to Plaça Espanya for seamless exploration.
 - **Advanced Filtering**: Quickly toggle between viewing all bikes, or focus specifically on Manual or Electric availability.
-- **Multilingual Support**: Fully localized interface in **Spanish**, **Catalan**, and **English**.
+- **Multilingual Support**: Fully localized interface in **Spanish**, **Catalan**, and **English** with a sleek space-saving selector.
 - **Performance Optimized**: Built with Vite and TypeScript for instant loading and type-safe data handling.
-- **Premium Aesthetics**: Modern "glassmorphism" UI design with responsive layouts for both desktop and mobile.
+- **State-of-the-Art Aesthetics**: Modern "glassmorphism" UI design with a focus on "frosted" transparency, vibrant colors, and smooth micro-animations.
+
+## 📱 Mobile-First Excellence
+
+The application has been meticulously polished for mobile use:
+- **Premium Controls**: A "floating pill" design for nearest stations that feels like a native OS control.
+- **Compact Navigation**: A space-saving header with a solid dark theme for high contrast and better map visibility.
+- **Intuitive Interactions**: Gestures and animations that make exploring bike availability on the go a fluid experience.
 
 ## 🛠️ Technology Stack
 
@@ -28,7 +35,7 @@ The application follows a modern, modular architecture:
 1.  **Data Layer**: A custom React hook (`useBiciData`) handles the complex orchestration of fetching multi-layered GBFS data. It fetches the root discovery file, identifies language-specific feeds, and merges station metadata with real-time status updates in a single, efficient operation.
 2.  **Mapping Engine**: Utilizes React-Leaflet for declarative map management. Custom markers are rendered as HTML elements via `L.divIcon`, allowing for dynamic styling and real-time count updates without re-initializing the entire map.
 3.  **State Management**: Uses React's `useState` and `useMemo` for high-performance filtering and distance calculations, ensuring the UI remains fluid even with dozens of active markers.
-4.  **Responsive Design**: A custom CSS design system using CSS variables and modern layout techniques (Flexbox/Grid) ensures a seamless experience across all device sizes.
+4.  **Responsive Design System**: A bespoke CSS design system using CSS variables, glassmorphism techniques, and a mobile-optimized layout architecture.
 
 ## 🚀 Getting Started
 
