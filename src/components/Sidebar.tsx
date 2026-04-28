@@ -6,8 +6,9 @@ interface SidebarProps {
   stations: MergedStation[];
   lang: Language;
   lastUpdated: number | null;
-  onStationSelect: (station: MergedStation) => void;
+  onStationSelect: (station: MergedStation | null) => void;
   waitingForLocation: boolean;
+  selectedId: string | null;
 }
 
 const translations = {
@@ -16,7 +17,7 @@ const translations = {
   ca: { nearest: 'Estacions Properes', bikes: 'Total', manual: 'M', electric: 'E', docks: 'A', updated: 'Actualitzat', waiting: 'Permet l\'accés a la ubicació', empty: 'No hi ha estacions a menys de 500m' },
 };
 
-export const Sidebar = ({ stations, lang, lastUpdated, onStationSelect, waitingForLocation }: SidebarProps) => {
+export const Sidebar = ({ stations, lang, lastUpdated, onStationSelect, waitingForLocation, selectedId }: SidebarProps) => {
   const t = translations[lang];
 
   return (
@@ -45,8 +46,12 @@ export const Sidebar = ({ stations, lang, lastUpdated, onStationSelect, waitingF
         stations.map((station) => (
           <div 
             key={station.station_id} 
-            className="station-card"
+            className={`station-card ${selectedId === station.station_id ? 'selected' : ''}`}
             onClick={() => onStationSelect(station)}
+            style={{ 
+              borderColor: selectedId === station.station_id ? 'var(--primary)' : 'var(--glass-border)',
+              background: selectedId === station.station_id ? 'rgba(16, 185, 129, 0.1)' : 'rgba(30, 41, 59, 0.5)'
+            }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
               <div style={{ fontWeight: 600, fontSize: '0.85rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

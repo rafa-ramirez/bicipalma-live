@@ -57,7 +57,7 @@ function App() {
       .sort((a, b) => (a.distance || 0) - (b.distance || 0));
   }, [stations, userLocation, filterType]);
 
-  const handleStationSelect = (station: MergedStation) => {
+  const handleStationSelect = (station: MergedStation | null) => {
     setSelectedStation(station);
   };
 
@@ -131,6 +131,7 @@ function App() {
           lastUpdated={lastUpdated} 
           onStationSelect={handleStationSelect}
           waitingForLocation={!userLocation}
+          selectedId={selectedStation?.station_id || null}
         />
         
         <div style={{ flex: 1, position: 'relative' }}>
@@ -143,6 +144,7 @@ function App() {
               stations={stations} 
               userLocation={userLocation} 
               selectedStation={selectedStation}
+              onStationSelect={handleStationSelect}
               filterType={filterType}
             />
           )}
