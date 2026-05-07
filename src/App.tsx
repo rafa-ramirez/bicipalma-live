@@ -14,6 +14,7 @@ import { calculateDistance } from './utils/geo';
 function App() {
   const [lang, setLang] = useState<Language>('es');
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [mapCenterLocation, setMapCenterLocation] = useState<[number, number] | null>(null);
   const [hasForcedLocation, setHasForcedLocation] = useState(false);
   const [selectedStation, setSelectedStation] = useState<MergedStation | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'manual' | 'electric'>('all');
@@ -27,20 +28,33 @@ function App() {
 
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
-        setUserLocation([position.coords.latitude, position.coords.longitude]);
+        const coords: [number, number] = [position.coords.latitude, position.coords.longitude];
+        setUserLocation(coords);
+        // Only center map on first location
+        if (!mapCenterLocation && !hasForcedLocation) {
+          setMapCenterLocation(coords);
+        }
       },
       (err) => {
         console.error('Geolocation error:', err);
+        // Use fallback location if geolocation fails
+        if (!mapCenterLocation && !hasForcedLocation) {
+          console.log('Using fallback location: Plaça Espanya');
+          const fallback: [number, number] = [39.5767, 2.6557];
+          setUserLocation(fallback);
+          setMapCenterLocation(fallback);
+          setHasForcedLocation(true);
+        }
       },
       {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 30000
       }
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
-  }, []);
+  }, [mapCenterLocation, hasForcedLocation]);
 
   /*
   useEffect(() => {
@@ -80,7 +94,7 @@ function App() {
         ...s,
         distance: calculateDistance(userLocation[0], userLocation[1], s.lat, s.lon)
       }))
-      .filter(s => s.distance !== undefined && s.distance <= 2.0) // Radius of 2km
+      .filter(s => s.distance !== undefined && s.distance <= 0.5) // Radius of 500m
       .sort((a, b) => (a.distance || 0) - (b.distance || 0));
   }, [stations, userLocation, filterType]);
 
@@ -94,7 +108,17 @@ function App() {
   return (
     <>
       <header className="header">
-        <div className="logo">
+        <div 
+          className="logo"
+          onClick={() => {
+            setSelectedStation(null);
+            if (userLocation) {
+              setMapCenterLocation(userLocation);
+            }
+            setIsSidebarOpen(true);
+          }}
+          style={{ cursor: 'pointer' }}
+        >
           <Bike size={32} />
           <span>BiciPalma Live</span>
         </div>
@@ -129,16 +153,22 @@ function App() {
                   setIsLocating(true);
                   navigator.geolocation.getCurrentPosition(
                     (p) => {
-                      setUserLocation([p.coords.latitude, p.coords.longitude]);
+                      const coords: [number, number] = [p.coords.latitude, p.coords.longitude];
+                      setUserLocation(coords);
+                      setMapCenterLocation(coords);
                       setHasForcedLocation(false);
+                      setSelectedStation(null);
                       setIsSidebarOpen(true);
                       setIsLocating(false);
                     },
                     (e) => {
                       setIsLocating(false);
                       console.log('Falling back to simulated location');
-                      setUserLocation([39.5767, 2.6557]);
+                      const fallback: [number, number] = [39.5767, 2.6557];
+                      setUserLocation(fallback);
+                      setMapCenterLocation(fallback);
                       setHasForcedLocation(true);
+                      setSelectedStation(null);
                     },
                     { enableHighAccuracy: true, timeout: 10000 }
                   );
@@ -200,7 +230,7 @@ function App() {
           ) : (
             <MapView 
               stations={stations} 
-              userLocation={userLocation} 
+              userLocation={mapCenterLocation} 
               selectedStation={selectedStation}
               onStationSelect={handleStationSelect}
               filterType={filterType}

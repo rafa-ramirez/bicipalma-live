@@ -67,6 +67,9 @@ const MapController = ({ coords, selectedStation, markerRefs }: {
       if (marker) {
         marker.openPopup();
       }
+    } else {
+      // Close all popups when selection is cleared
+      map.closePopup();
     }
   }, [selectedStation, map, markerRefs]);
 
