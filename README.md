@@ -8,13 +8,23 @@ A high-performance, real-time mapping application for **BiciPalma**, the public 
 
 - **Real-Time Data**: Automatically refreshes bike and dock availability every minute using official GBFS feeds.
 - **Smart Mapping**: Interactive map powered by Leaflet with custom "pill" markers showing the breakdown of Manual vs. Electric bikes at a glance.
-- **Location Awareness**: Detects user location to show the nearest stations with a fallback to Plaça Espanya for seamless exploration.
+- **Reliable Location Detection**: Geolocation with intelligent fallback and support for continuous background location updates.
+- **Free Map Panning**: Explore the map freely without auto-recentering while navigating.
+- **Nearby Stations**: Smart sidebar showing only stations within 500 meters of your location, updated in real-time.
 - **Advanced Filtering**: Quickly toggle between viewing all bikes, or focus specifically on Manual or Electric availability.
 - **Multilingual Support**: Fully localized interface in **Spanish**, **Catalan**, and **English** with a sleek space-saving selector.
 - **Performance Optimized**: Built with Vite and TypeScript for instant loading and type-safe data handling.
 - **State-of-the-Art Aesthetics**: Modern "glassmorphism" UI design with a focus on "frosted" transparency, vibrant colors, and smooth micro-animations.
 
-## 📱 Mobile-First Excellence
+## � Recent Improvements
+
+- **Fixed Geolocation Issues**: Resolved Chrome geolocation timeout problems with optimized timeout settings and intelligent fallback handling.
+- **Improved Map Interaction**: Separated map centering from continuous location tracking, allowing users to freely pan and explore without auto-recentering interruptions.
+- **Smart Nearby Radius**: Displays only stations within 500 meters (previously 2km) for more contextually relevant results.
+- **Enhanced Navigation**: Click the BiciPalma Live logo to reset selection, center the map, and open the sidebar—acting as a convenient "home" button.
+- **Better Popup Management**: Popups now close cleanly when deselecting stations for a seamless user experience.
+
+## �📱 Mobile-First Excellence
 
 The application has been meticulously polished for mobile use:
 - **Premium Controls**: A "floating pill" design for nearest stations that feels like a native OS control.
