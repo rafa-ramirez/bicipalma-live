@@ -7,15 +7,14 @@ A high-performance, real-time mapping application for **BiciPalma**, the public 
 ## ✨ Features
 
 - **Real-Time Data**: Automatically refreshes bike and dock availability every 10 seconds using official GBFS feeds.
-- **Cross-Platform**: Built natively with Flutter to run seamlessly on Web, macOS, iOS, and Android without changing code.
-- **Native Permissions**: Requests and handles OS-level location permissions gracefully across Android, iOS, and macOS.
-- **Smart Mapping**: Interactive map powered by `flutter_map` with custom markers showing the exact breakdown of Manual vs. Electric bikes. Map rotation is locked for an optimal mobile experience.
-- **Distance Tracking**: Calculates and displays the exact distance (in meters/km) from your current location to every station in the city, directly on the list and map pop-ups.
-- **Mobile-Optimized UX**: Features a responsive `DraggableScrollableSheet` bottom panel on mobile devices for seamless interaction between the map and the stations list.
-- **Reliable Location Detection**: Geolocation with intelligent fallback. Clicking the app's title bar or the map's center button instantly centers the map back to your live location.
-- **Dynamic Advanced Filtering**: Instantly toggle between "All", "Manual", and "Electric" bikes. Map marker colors and numbers update dynamically based on the applied filter.
+- **Cross-Platform**: Built natively with Flutter to run seamlessly on Web, macOS, iOS, and Android.
+- **Marker-Centric UI**: A modern, map-first experience where station details emerge directly from markers in stylized bubble popups.
+- **Context-Aware Popups**: Marker bubbles feature glassmorphism styling, custom scale animations, and detailed icon badges for a premium feel.
+- **Intelligent Z-Index**: Selected stations are dynamically sorted to render on top, ensuring active information is never obscured.
+- **Redesigned Mobile Panel**: A responsive `DraggableScrollableSheet` with a new premium header, integrated fullscreen toggle, and smart snap points.
+- **Distance Tracking**: Real-time distance calculation from your location to every station, displayed in the list and map bubbles.
 - **Multilingual Support**: Fully localized interface in **Spanish**, **Catalan**, and **English**.
-- **State-of-the-Art Aesthetics**: Modern "glassmorphism" UI design with frosted transparency, vibrant colors, and smooth 60fps micro-animations powered by `flutter_animate`.
+- **State-of-the-Art Aesthetics**: Frosted transparency, vibrant harmonious palettes, and 60fps micro-animations.
 
 ## 🛠️ Technology Stack
 
